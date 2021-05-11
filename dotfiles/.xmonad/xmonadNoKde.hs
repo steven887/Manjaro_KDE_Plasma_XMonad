@@ -18,7 +18,6 @@ import XMonad
 import System.Exit
 import qualified XMonad.StackSet as W
 import System.IO (hPutStrLn)
-import XMonad.Config.Kde
 -------------------------------------------------------------------
 ------                          DATA                         ------               
 -------------------------------------------------------------------
@@ -52,6 +51,7 @@ import XMonad.Layout.Grid
 import XMonad.Layout.NoBorders
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ResizableTile
+import XMonad.Layout.SimplestFloat
 
 
 -------------------------------------------------------------------
@@ -94,8 +94,8 @@ myClickJustFocuses = False
 myBorderWidth = 2
 
 -- Your border color
-myNormalBorderColor  = "#81A2BE"
-myFocusedBorderColor = "#0094EB" 
+myNormalBorderColor  = "#22d964"
+myFocusedBorderColor = "#3ef008" 
 
 -- Set Your ModKey -> mod1Mask = left alt, mod3Mask = right alt, mod4Mask = window
 myModMask :: KeyMask
@@ -106,9 +106,9 @@ altMask = mod1Mask
 
 
 -- Set your workspaces
-myWorkspaces = ["1","2","3","4","5","6","7","8","9"]
+--myWorkspaces = ["1","2","3","4","5","6","7","8","9"]
 --myWorkspaces = ["חתא","םיתש","שלש","עברא","שמח","שש","עבש","הנומש","עשת"]
---myWorkspaces = ["一","二","三","四","五","六","七","八","九"]
+myWorkspaces = ["一","二","三","四","五","六","七","八","九"]
 --myWorkspaces = [" \xf10c "," \xf10c "," \xf10c "," \xf10c "," \xf10c "," \xf10c "," \xf10c "," \xf10c "," \xf10c"]
 
 -----------  make your workspace on xmobar clickable ------------
@@ -139,8 +139,6 @@ myshowWNameTheme = def
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
--- $ spacingRaw True (Border 0 8 8 8) True (Border 8 8 8 8) True 
-
 
 myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ?? FULL ?? EOT) $ avoidStruts  (
            --monocle      |||
@@ -197,30 +195,15 @@ windowCount =
 
 -- doRectFloat :: W.RationalRect -> ManageHook
 
-myManageHook = composeAll 
+myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore 
     , className =? "xdman-Main"        --> doFloat
-    , className =? "Plasma-desktop" --> doFloat
-    , className =? "plasmashell"    --> doIgnore <+> hasBorder False >> doFloat
-    , className =? "krunner"        --> doIgnore >> doFloat
-    , className =? "lattedock"      --> doIgnore
-    , className =? "latte-dock"      --> doIgnore
     ]
-   -- [[ className =? c --> doFLoat  | c <- myFloats ]
-   -- ,[ className =? c --> doIgnore | c <- myIgnore ]
-   -- ]
-   -- where
-   -- myFloats = [
-   --    "xdman-Main"
-   --   ,"Plasma-desktop"
-   --   ,"plasmashell"
-   --   ,"krunner"
-   --   ]
    <+>composeOne
-   [className =? "dolphin"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
+   [className =? "Pcmanfm"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
    --,className =? "xdman-Main"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
    ]
 -------------------------------------------------------------------
@@ -242,11 +225,9 @@ myLogHook = return () -- fadeInactiveLogHook fadeAmount
 -------------------------------------------------------------------
 
 myStartupHook = do
---   spawnOnce "nitrogen --restore &"
+   spawnOnce "nitrogen --restore &"
    spawnOnce "picom &"
-   spawnOnce "krunner -d"
-   
---   spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 5 --transparent true --alpha 55 --tint 0x000000  --height 20 --monitor 0 --iconspacing 2 &"
+   spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request  --transparent true --alpha 55 --tint 0x000000  --height 22 --monitor 0 --iconspacing 2 &"
 
 -------------------------------------------------------------------
 ------                     KEY BINDINGS                      ------               
@@ -258,7 +239,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
    -- [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
       [ 
       ((shiftMask .|. controlMask , xK_Return), spawn $ XMonad.terminal conf)
-    , ((0, xK_Print), spawn "scrot 'scrot-%Y-%m-%d_$wx$h.png' -s -e   'mv $f ~/Pictures/screenshoots'") 
+    , ((0, xK_Print), spawn "scrot 'scrot-%Y-%m-%d_$wx$h.png' -s -e   'mv $f ~/screenshoots'") 
    -- launch kitty terminal
     , ((modm .|. shiftMask, xK_Return), spawn myTerminal3)
    
@@ -279,10 +260,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((altMask .|. controlMask  ,      xK_b    ),  spawn "brave --incognito")
 
    -- launch pcmanfm
-    , ((modm,               xK_p   ),   spawn "dolphin")
+    , ((modm,               xK_p   ),   spawn "pcmanfm")
   
    -- launch dmenu
-    , ((modm,               xK_d     ), spawn "dmenu_run")
+    , ((modm,               xK_d     ), spawn "dmenu_run -h 24")
 
 
     -- close focused window
@@ -357,20 +338,20 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0,      xF86XK_AudioPrev        ), spawn "playerctl previous")
 
     -- Volume Key - mute/on
-   -- ,  ((0, xF86XK_AudioMute             ), spawn "amixer set Master toggle")
+    ,  ((0, xF86XK_AudioMute             ), spawn "amixer set Master toggle")
    
     -- Volume Key - decrease volume 
-    --,  ((0, xF86XK_AudioLowerVolume      ), spawn "amixer set Master 2%-")
+    ,  ((0, xF86XK_AudioLowerVolume      ), spawn "amixer set Master 2%-")
 
     -- Volume Key - increase volume 
-    --,  ((0, xF86XK_AudioRaiseVolume      ), spawn "amixer set Master 2%+")
+    ,  ((0, xF86XK_AudioRaiseVolume      ), spawn "amixer set Master 2%+")
     
     -- Toggle the status bar gap
     -- Use this binding with avoidStruts from Hooks.ManageDocks.
     -- See also the statusBar function from Hooks.DynamicLog.
     --
      , ((modm .|. controlMask             , xK_t     ), sendMessage ToggleStruts)
-
+    
     -- Toggle Layout
      , ((modm .|. shiftMask               , xK_f    ), sendMessage $ Toggle NBFULL)
 
@@ -401,6 +382,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [((m .|. modm, key), screenWorkspace sc >>= flip whenJust (windows . f))
         | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
         , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
+        
 
 
 ------------------------------------------------------------------------
@@ -422,26 +404,24 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 -------------------------------------------------------------------
 ------                        MAIN                           ------               
 -------------------------------------------------------------------
-startupList =
-  [ "sleep 5 && for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done" ]
 
 main :: IO ()
 main = do
---	xmproc0 <- spawnPipe "xmobar" 
---	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
- 	xmonad $ ewmh defaults {
-        logHook = def --dynamicLogWithPP $ def
-        --{
- --         ppOutput  = hPutStrLn xmproc0 --x -- >> hPutStrLn xmproc1 x
-        --, ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
-        --, ppVisible = xmobarColor "#2ba402" "" .  clickable
-        --, ppHidden  = xmobarColor "#498236" "" . wrap "" "*" . clickable
-        --, ppTitle   = xmobarColor "#22d964" "" . shorten 50
-        --, ppSep     =  "<fc=#666666> | </fc>"
-        --, ppHiddenNoWindows = xmobarColor "#373b41" "" . wrap "|" " " 
-        --, ppExtras  = [windowCount] 
-        --, ppOrder   = \(ws:l:t:ex) -> [ws, l]++ex++[t]
-        --}
+	xmproc0 <- spawnPipe "xmobar -x 0 /home/steven/.config/xmobar/xmobarrc" 
+	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
+ 	xmonad $  ewmh defaults {
+        logHook = dynamicLogWithPP $ def
+        {
+          ppOutput  = \x ->  hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x
+        , ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
+        , ppVisible = xmobarColor "#2ba402" "" .  clickable
+        , ppHidden  = xmobarColor "#498236" "" . wrap "" "*" . clickable
+        , ppTitle   = xmobarColor "#22d964" "" . shorten 50
+        , ppSep     =  "<fc=#666666> | </fc>"
+        , ppHiddenNoWindows = xmobarColor "#373b41" "" . wrap "|" " " 
+        , ppExtras  = [windowCount] 
+        , ppOrder   = \(ws:l:t:ex) -> [ws, l]++ex++[t]
+        }
         }
 
 defaults = def {
@@ -461,10 +441,10 @@ defaults = def {
 
       -- hooks, layouts
         layoutHook         = showWName' myshowWNameTheme $ myLayout,
-        manageHook         = manageHook kde4Config <+> myManageHook <+> manageDocks,
-        handleEventHook    = handleEventHook kde4Config <+> docksEventHook, 
+        manageHook         = myManageHook <+> manageDocks,
+        handleEventHook    = docksEventHook,
         logHook            = myLogHook ,
-        startupHook        = myStartupHook <+> startupHook kde4Config <+> sequence_ [spawnOnce "xdotool exec xmobar"]
+        startupHook        = myStartupHook
     }
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.

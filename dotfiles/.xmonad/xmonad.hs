@@ -422,26 +422,26 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 -------------------------------------------------------------------
 ------                        MAIN                           ------               
 -------------------------------------------------------------------
-startupList =
+--startupList =
   [ "sleep 5 && for i in `xdotool search --all --name xmobar`; do xdotool windowraise $i; done" ]
 
 main :: IO ()
 main = do
---	xmproc0 <- spawnPipe "xmobar" 
+	xmproc0 <- spawnPipe "xmobar -x 0 /home/steven/.config/xmobar/xmobarrc" 
 --	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
  	xmonad $ ewmh defaults {
         logHook = def --dynamicLogWithPP $ def
-        --{
- --         ppOutput  = hPutStrLn xmproc0 --x -- >> hPutStrLn xmproc1 x
-        --, ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
-        --, ppVisible = xmobarColor "#2ba402" "" .  clickable
-        --, ppHidden  = xmobarColor "#498236" "" . wrap "" "*" . clickable
-        --, ppTitle   = xmobarColor "#22d964" "" . shorten 50
-        --, ppSep     =  "<fc=#666666> | </fc>"
-        --, ppHiddenNoWindows = xmobarColor "#373b41" "" . wrap "|" " " 
-        --, ppExtras  = [windowCount] 
-        --, ppOrder   = \(ws:l:t:ex) -> [ws, l]++ex++[t]
-        --}
+        {
+        ppOutput  = hPutStrLn xmproc0 x -- >> hPutStrLn xmproc1 x
+        , ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
+        , ppVisible = xmobarColor "#2ba402" "" .  clickable
+        , ppHidden  = xmobarColor "#498236" "" . wrap "" "*" . clickable
+        , ppTitle   = xmobarColor "#22d964" "" . shorten 50
+        , ppSep     =  "<fc=#666666> | </fc>"
+        , ppHiddenNoWindows = xmobarColor "#373b41" "" . wrap "|" " " 
+        , ppExtras  = [windowCount] 
+        , ppOrder   = \(ws:l:t:ex) -> [ws, l]++ex++[t]
+        }
         }
 
 defaults = def {
@@ -464,7 +464,7 @@ defaults = def {
         manageHook         = manageHook kde4Config <+> myManageHook <+> manageDocks,
         handleEventHook    = handleEventHook kde4Config <+> docksEventHook, 
         logHook            = myLogHook ,
-        startupHook        = myStartupHook <+> startupHook kde4Config <+> sequence_ [spawnOnce "xdotool exec xmobar"]
+        startupHook        = myStartupHook <+> startupHook kde4Config -- <+> sequence_ [spawnOnce "xdotool exec xmobar"]
     }
 
 -- | Finally, a copy of the default bindings in simple textual tabular format.
