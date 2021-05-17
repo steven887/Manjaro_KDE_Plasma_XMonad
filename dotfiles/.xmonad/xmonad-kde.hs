@@ -155,22 +155,22 @@ myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ?? FULL ?? EOT) $ avo
     tall     = renamed [Replace "Tall"] 
                $ windowNavigation 
                $ subLayout [] (smartBorders Simplest)
-               $ mySpacing 8 
+               $ mySpacing 6 
                $ ResizableTall 1 (3/100) (1/2) [] 
 
     grid     = renamed [Replace "Grid"] 
                $ windowNavigation 
-               $ mySpacing 8
+               $ mySpacing 6
                $ Grid
 
     mirror   = renamed [Replace "Mirror"]
                $ windowNavigation
-               $ mySpacing 8
+               $ mySpacing 6
                $ Mirror (Tall 1 (3/100) (3/5))
 
     threeCol = renamed [Replace "ThreeCol"]
                $ windowNavigation
-               $ mySpacing 8
+               $ mySpacing 6
                $ ThreeCol 1 (3/100) (1/2)
 
 --    monocle = renamed [Replace "monocle"]
