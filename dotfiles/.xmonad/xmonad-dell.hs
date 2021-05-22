@@ -52,6 +52,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.SimplestFloat
+import XMonad.Layout.Tabbed
 
 
 -------------------------------------------------------------------
@@ -64,7 +65,7 @@ import XMonad.Layout.Renamed
 import XMonad.Layout.ShowWName -- This is a layout modifier that will show the workspace name
 import XMonad.Layout.WindowNavigation
 import XMonad.Layout.Simplest
-import XMonad.Layout.SubLayouts
+--import XMonad.Layout.SubLayouts
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 -------------------------------------------------------------------
@@ -72,6 +73,7 @@ import XMonad.Layout.MultiToggle.Instances
 -------------------------------------------------------------------
 import XMonad.Actions.MouseResize
 import XMonad.Actions.OnScreen
+
 ------------------ # End Import Section # -------------------------
 -------------------------------------------------------------------
 
@@ -107,6 +109,9 @@ myModMask = mod4Mask
 
 altMask :: KeyMask
 altMask = mod1Mask
+
+myFont :: String
+myFont = "xft:JetBrainsMono Nerd Font:pixelsize=10:Bold:antialias=true"
 
 
 -- Set your workspaces
@@ -162,7 +167,7 @@ myshowWNameTheme = def
   --swn_font         = "xft:NotoSansCJKSC:bold:size=60:antialias=true:hinting=true"
   swn_font         = "xft:Font Awesome 5 Free Solid:Solid:pixelsize=120:antialias=true:hinting=true"
   --swn_font          = "xft:MesloLGL Nerd Font:size=60:Regular:antialias=true"
-  ,swn_fade         = 0.25
+  ,swn_fade         = 0.50
   ,swn_bgcolor      = "#191c21"
   ,swn_color        = "#0CBCF7"
   }
@@ -176,14 +181,15 @@ myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?
            tall         ||| 
            grid         |||
            mirror       |||
-           threeCol 
+           threeCol     ||| 
+           tab
            )            ||| 
            noBorders Full
 
   where 
     tall     = renamed [Replace "Tall"] 
                $ windowNavigation 
-               $ subLayout [] (smartBorders Simplest)
+               -- $ subLayout [] -(smartBorders Simplest)
                $ mySpacing 8 
                $ ResizableTall 1 (3/100) (1/2) [] 
 
@@ -201,12 +207,24 @@ myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?
                $ windowNavigation
                $ mySpacing 8
                $ ThreeCol 1 (3/100) (1/2)
+    
+    tab      =  renamed [Replace "Tabs"]
+               $ tabbed shrinkText myTabConfig 
 
 --    monocle = renamed [Replace "monocle"]
 --              $ smartBorders
 --              $ subLayout [] (smartBorders Simplest)
 --              $ Full
 
+--- tabTheme config for tabbed layout ---
+myTabConfig = def { fontName             = myFont 
+               , activeColor          = "#0CBCF7"
+               , inactiveColor        = "#373b41" 
+               , activeBorderColor    = "#0CBCF7"
+               , inactiveBorderColor  = "#373b41"
+               , activeTextColor      = "#ffffff"
+               , inactiveTextColor    = "#666666"
+               }
 
 windowCount :: X (Maybe String)
 windowCount =
@@ -231,12 +249,12 @@ myManageHook = composeAll
     , className =? "Gimp"           --> doFloat
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore 
-    , className =? "xdman-Main"        --> doFloat
+   -- , className =? "persepolis"        --> doFloat
     , className =? "kitty"          --> hasBorder False
     ]
    <+>composeOne
    [className =? "Pcmanfm"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
-   --,className =? "xdman-Main"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
+   ,className =? "persepolis"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
    ]
 -------------------------------------------------------------------
 ------                   EVENT HANDLING                      ------               
@@ -257,8 +275,8 @@ myLogHook = return () -- fadeInactiveLogHook fadeAmount
 -------------------------------------------------------------------
 
 myStartupHook = do
-   spawnOnce "nitrogen --restore &"
    spawnOnce "picom &"
+   spawnOnce "nitrogen --restore &"
    spawnOnce "trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --widthtype request  --transparent true --alpha 127 --tint 0x000000  --height 22 --monitor 0 --iconspacing 2 &"
 
 -------------------------------------------------------------------
@@ -271,7 +289,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
    -- [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
       [ 
       ((shiftMask .|. controlMask , xK_Return), spawn $ XMonad.terminal conf)
-    , ((0, xK_Print), spawn "scrot 'scrot-%Y-%m-%d_$wx$h.png' -s -e   'mv $f ~/screenshot'") 
+    , ((0, xK_Print), spawn "scrot 'scrot-%Y-%m-%d_$wx$h.png' -s -e   'mv $f ~/screenshoots'") 
    -- launch kitty terminal
     , ((modm .|. shiftMask, xK_Return), spawn myTerminal3 )
    
@@ -394,6 +412,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- Restart xmonad
     , ((modm              , xK_q     ), spawn "xmonad --recompile; xmonad --restart")
+
+    -- Lockscreen
+    , ((controlMask .|. altMask , xK_l  ), spawn "multilockscreen -l blur")
+
 
     -- Run xmessage with a summary of the default keybindings (useful for beginners)
     , ((modm .|. shiftMask, xK_slash ), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
