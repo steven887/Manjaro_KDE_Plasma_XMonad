@@ -34,6 +34,7 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.Run
 import XMonad.Util.EZConfig
 import Graphics.X11.ExtraTypes.XF86
+import XMonad.Util.NamedScratchpad
 -------------------------------------------------------------------
 ------                          HOOKS                        ------ 
 -------------------------------------------------------------------
@@ -68,11 +69,13 @@ import XMonad.Layout.Simplest
 --import XMonad.Layout.SubLayouts
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
+import qualified XMonad.Layout.ToggleLayouts as T (toggleLayouts, ToggleLayout(Toggle))
 -------------------------------------------------------------------
 ------                         ACTIONS                       ------
 -------------------------------------------------------------------
 import XMonad.Actions.MouseResize
 import XMonad.Actions.OnScreen
+import XMonad.Actions.WithAll
 
 ------------------ # End Import Section # -------------------------
 -------------------------------------------------------------------
@@ -175,13 +178,14 @@ myshowWNameTheme = def
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
 
-myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?? EOT) $ avoidStruts  (
+myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?? EOT) $ T.toggleLayouts floats $ avoidStruts  (
            --monocle      |||
            tall         ||| 
            grid         |||
            mirror       |||
            threeCol     ||| 
-           tab
+           tab          |||
+           floats
            )            ||| 
            noBorders Full
 
@@ -209,6 +213,10 @@ myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?
     
     tab      =  renamed [Replace "Tabs"]
                $ tabbed shrinkText myTabConfig 
+
+    floats   = renamed [Replace "Floats"]
+               $ smartBorders 
+               $ simplestFloat
 
 --    monocle = renamed [Replace "monocle"]
 --              $ smartBorders
@@ -274,6 +282,7 @@ myManageHook = composeAll
    [className =? "Pcmanfm"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
    ,className =? "persepolis"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
    ]
+   <+> namedScratchpadManageHook scratchpads
 -------------------------------------------------------------------
 ------                   EVENT HANDLING                      ------               
 -------------------------------------------------------------------
@@ -382,11 +391,11 @@ s_Keys =
 main :: IO ()
 main = do
 	xmproc0 <- spawnPipe "xmobar -x 0 /home/steven/.config/xmobar/xmobarrc" 
-	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
+	--xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
  	xmonad $  ewmh defaults {
         logHook = dynamicLogWithPP $ def
         {
-          ppOutput  = \x ->  hPutStrLn xmproc0 x >> hPutStrLn xmproc1 x
+          ppOutput  = \x ->  hPutStrLn xmproc0 x -- >> hPutStrLn xmproc1 x
         --, ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
         -- without background
         , ppCurrent = xmobarColor "#7bf9f2" ""  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
