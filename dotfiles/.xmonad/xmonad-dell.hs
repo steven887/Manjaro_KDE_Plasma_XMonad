@@ -44,6 +44,7 @@ import XMonad.Hooks.SetWMName
 import XMonad.Hooks.ManageHelpers
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks (avoidStruts, docksEventHook, manageDocks, ToggleStruts(..))
+import XMonad.Hooks.DynamicProperty
 
 -------------------------------------------------------------------
 ------                         LAYOUTS                       ------
@@ -178,7 +179,7 @@ myshowWNameTheme = def
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
 
-myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?? EOT) $ T.toggleLayouts floats $ avoidStruts  (
+myLayout = mouseResize $ windowArrange  $ mkToggle (NBFULL ??NOBORDERS ?? FULL ?? EOT) $ T.toggleLayouts tab $ avoidStruts  (
            --monocle      |||
            tall         ||| 
            grid         |||
@@ -257,12 +258,17 @@ windowCount =
 --l = 0.2 -- (1 - w)/2  --> center from left/right
 
 scratchpads = [ NS "terminal" spawnSt findSt stLayout
-                
+              , NS "spotify" spawnSpotify findSpotify spotifyLayout
               ]
      where
      spawnSt  = s_Term  ++ " -n st-terminal" 
      findSt   = resource =? "st-terminal"
      stLayout = customFloating $ W.RationalRect (0.1)(0.1)(0.8)(0.8) 
+
+     spawnSpotify  = "spotify-adblock"
+     findSpotify   = className =? "Spotify"
+     spotifyLayout = customFloating $ W.RationalRect (0.1)(0.1)(0.8)(0.8)
+                     --where role = stringProperty "WM_WINDOWS_ROLE"
 
 -------------------------------------------------------------------
 ------                   WINDOW RULES                        ------               
@@ -281,6 +287,9 @@ myManageHook = composeAll
    <+>composeOne
    [className =? "Pcmanfm"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
    ,className =? "persepolis"  -?> doRectFloat $ (W.RationalRect (1 % 4) (1 % 4) (1 % 2) (1 % 2) ) 
+   , className =? "Blueman-manager"         -?>  doCenterFloat  
+   , className =? "Pavucontrol"             -?>  doCenterFloat  
+   , className =? "Nm-connection-editor"    -?>  doCenterFloat  
    ]
    <+> namedScratchpadManageHook scratchpads
 -------------------------------------------------------------------
@@ -288,6 +297,10 @@ myManageHook = composeAll
 -------------------------------------------------------------------
 
 --myEventHook = mempty
+
+s_HandleEventHook :: Event -> X All
+s_HandleEventHook = dynamicPropertyChange "WM_NAME" (className =? "Spotify" --> floating)
+      where floating = customFloating $ W.RationalRect (0.1)(0.1)(0.8)(0.8)
 
 -------------------------------------------------------------------
 ------                  STATUS BARS & LOGGING                ------               
@@ -345,10 +358,11 @@ s_Keys =
 
   -- Window push back into tiling/float
         , ("M-t",               withFocused $ windows . W.sink) -- push from floating windows back to tile
-        , ("M-S-t",                                   sinkAll ) -- push all floating windows back to tile
+        , ("M-C-t",                                   sinkAll ) -- push all floating windows back to tile
         
   -- Layout Toggle
-        , ("M-S-t",            sendMessage (T.Toggle "Floats"))
+        --, ("M-S-t",            sendMessage (T.Toggle "Floats"))
+        , ("M-S-t",            sendMessage (T.Toggle "Tabs"))
         , ("M-f",                  sendMessage $ Toggle NBFULL) -- toggle Full noborders
         , ("M-S-_b",            sendMessage $ Toggle NOBORDERS) -- toggle noBorders
         , ("M-C-t"                  , sendMessage ToggleStruts) -- toggle status bar gap
@@ -364,6 +378,9 @@ s_Keys =
 
   -- Media Keys / Extra Keys
 
+    , ("<Print>", spawn "scrot -szf -e ' ~/steven_data/screenshots.sh $f'")
+    , ("<XF86MonBrightnessUp>",             spawn "lux -a 10%")
+    , ("<XF86MonBrightnessDown>",           spawn "lux -s 10%")
     , ("<XF86Tools>",                  spawn "spotify-adblock")
     , ("<XF86AudioPlay>",         spawn "playerctl play-pause")
     , ("<XF86AudioStop>",               spawn "playerctl stop")
@@ -382,6 +399,7 @@ s_Keys =
 
   -- SCRATCHPADS
     , ("M1-C-<Return>", namedScratchpadAction scratchpads "terminal")
+    , ("M1-C-s",         namedScratchpadAction scratchpads "spotify")
 
       ]
 ------------------------------------------------------------------
@@ -391,11 +409,11 @@ s_Keys =
 main :: IO ()
 main = do
 	xmproc0 <- spawnPipe "xmobar -x 0 /home/steven/.config/xmobar/xmobarrc" 
-	--xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
+	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
  	xmonad $  ewmh defaults {
         logHook = dynamicLogWithPP $ def
         {
-          ppOutput  = \x ->  hPutStrLn xmproc0 x -- >> hPutStrLn xmproc1 x
+          ppOutput  = \x ->  hPutStrLn xmproc0 x  >> hPutStrLn xmproc1 x
         --, ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
         -- without background
         , ppCurrent = xmobarColor "#7bf9f2" ""  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
@@ -428,7 +446,7 @@ defaults = def {
       -- hooks, layouts
         layoutHook         = showWName' myshowWNameTheme $ myLayout,
         manageHook         = myManageHook <+> manageDocks,
-        handleEventHook    = docksEventHook,
+        handleEventHook    = s_HandleEventHook <+> docksEventHook,
         logHook            = myLogHook ,
         startupHook        = myStartupHook
     }
