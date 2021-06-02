@@ -329,8 +329,8 @@ s_Keys =
          [ ("C-S-<Return>",                     spawn s_Term  )
          , ("M-S-<Return>",                     spawn s_Term2 )
          , ("M1-C-v",                            spawn "code" ) 
-         , ("M1-C-b",                     spawn "qutebrowser" )
-         , ("M1-C-q",                           spawn "brave" )
+         , ("M1-C-q",                     spawn "qutebrowser" )
+         , ("M1-C-b",                           spawn "brave" )
          , ("M-C-b",                spawn "brave --incognito" )
          , ("M1-C-f",                         spawn "firefox" )
          , ("M-C-f",         spawn "firefox --private-window" )
@@ -362,7 +362,7 @@ s_Keys =
         , ("M-C-t",                                   sinkAll ) -- push all floating windows back to tile
         
   -- Layout Toggle
-        --, ("M-S-t",            sendMessage (T.Toggle "Floats"))
+        --, ("M1-f",            sendMessage (T.Toggle "Floats"))
         , ("M-S-t",                sendMessage (T.Toggle "Tabs"))
         , ("M-f",                    sendMessage $ Toggle NBFULL) -- toggle Full noborders
         , ("M-S-b",               sendMessage $ Toggle NOBORDERS) -- toggle noBorders
@@ -382,7 +382,7 @@ s_Keys =
     , ("<Print>", spawn "scrot -szf -e ' ~/steven_data/screenshots.sh $f'")
     , ("<XF86MonBrightnessUp>",                         spawn "lux -a 10%")
     , ("<XF86MonBrightnessDown>",                       spawn "lux -s 10%")
-    , ("<XF86Tools>",                              spawn "spotify-adblock")
+    , ("<XF86Tools>",          namedScratchpadAction scratchpads "spotify")
     , ("<XF86AudioPlay>",                     spawn "playerctl play-pause")
     , ("<XF86AudioStop>",                           spawn "playerctl stop")
     , ("<XF86AudioNext>",                           spawn "playerctl next")
