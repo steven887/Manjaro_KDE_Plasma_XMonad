@@ -328,10 +328,11 @@ s_Keys =
    -- Apps Section
          [ ("C-S-<Return>",                     spawn s_Term  )
          , ("M-S-<Return>",                     spawn s_Term2 )
-         , ("M-S-v",                             spawn "code" ) 
-         , ("M-S-b",                            spawn "brave" )
+         , ("M1-C-v",                            spawn "code" ) 
+         , ("M1-C-b",                     spawn "qutebrowser" )
+         , ("M1-C-q",                           spawn "brave" )
          , ("M-C-b",                spawn "brave --incognito" )
-         , ("M-S-f",                          spawn "firefox" )
+         , ("M1-C-f",                         spawn "firefox" )
          , ("M-C-f",         spawn "firefox --private-window" )
          , ("M-p",                            spawn "pcmanfm" )
          , ("M-d",                    spawn "dmenu_run -h 24" )
@@ -362,46 +363,46 @@ s_Keys =
         
   -- Layout Toggle
         --, ("M-S-t",            sendMessage (T.Toggle "Floats"))
-        , ("M-S-t",            sendMessage (T.Toggle "Tabs"))
-        , ("M-f",                  sendMessage $ Toggle NBFULL) -- toggle Full noborders
-        , ("M-S-_b",            sendMessage $ Toggle NOBORDERS) -- toggle noBorders
-        , ("M-C-t"                  , sendMessage ToggleStruts) -- toggle status bar gap
+        , ("M-S-t",                sendMessage (T.Toggle "Tabs"))
+        , ("M-f",                    sendMessage $ Toggle NBFULL) -- toggle Full noborders
+        , ("M-S-b",               sendMessage $ Toggle NOBORDERS) -- toggle noBorders
+        , ("M-C-t"                    , sendMessage ToggleStruts) -- toggle status bar gap
 
   -- Changging Layout
   
-       , ("M-<Tab>",                   sendMessage NextLayout )
-      -- , ("M-S-<space>",   setLayout $ XMonad.layoutHook conf )
+        , ("M-<Tab>",                   sendMessage NextLayout )
+       -- , ("M-S-<space>",   setLayout $ XMonad.layoutHook conf )
         
   -- Increase / Decrease Master
-        , ("M-,",                   sendMessage (IncMasterN 1))
-        , ("M-.",                sendMessage (IncMasterN (-1)))
+        , ("M-,",                    sendMessage (IncMasterN 1))
+        , ("M-.",                 sendMessage (IncMasterN (-1)))
 
   -- Media Keys / Extra Keys
 
     , ("<Print>", spawn "scrot -szf -e ' ~/steven_data/screenshots.sh $f'")
-    , ("<XF86MonBrightnessUp>",             spawn "lux -a 10%")
-    , ("<XF86MonBrightnessDown>",           spawn "lux -s 10%")
-    , ("<XF86Tools>",                  spawn "spotify-adblock")
-    , ("<XF86AudioPlay>",         spawn "playerctl play-pause")
-    , ("<XF86AudioStop>",               spawn "playerctl stop")
-    , ("<XF86AudioNext>",               spawn "playerctl next")
-    , ("<XF86AudioPrev>",           spawn "playerctl previous")
-    , ("<XF86AudioMute>",     spawn "amixer set Master toggle")
-    , ("<XF86AudioLowerVolume>", spawn "amixer set Master 2%-")
-    , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 2%+")
+    , ("<XF86MonBrightnessUp>",                         spawn "lux -a 10%")
+    , ("<XF86MonBrightnessDown>",                       spawn "lux -s 10%")
+    , ("<XF86Tools>",                              spawn "spotify-adblock")
+    , ("<XF86AudioPlay>",                     spawn "playerctl play-pause")
+    , ("<XF86AudioStop>",                           spawn "playerctl stop")
+    , ("<XF86AudioNext>",                           spawn "playerctl next")
+    , ("<XF86AudioPrev>",                       spawn "playerctl previous")
+    , ("<XF86AudioMute>",                 spawn "amixer set Master toggle")
+    , ("<XF86AudioLowerVolume>",             spawn "amixer set Master 2%-")
+    , ("<XF86AudioRaiseVolume>",             spawn "amixer set Master 2%+")
 
   -- XMonad
-    , ("M-S-q",                      io (exitWith ExitSuccess))
-    , ("M-q",     spawn "xmonad --recompile; xmonad --restart")
+    , ("M-S-q",                                  io (exitWith ExitSuccess))
+    , ("M-q",                 spawn "xmonad --recompile; xmonad --restart")
 
   -- Lockscreen
-    , ("M1-C-l",               spawn "multilockscreen -l blur")
+    , ("M1-C-l",                           spawn "multilockscreen -l blur")
 
   -- SCRATCHPADS
-    , ("M1-C-<Return>", namedScratchpadAction scratchpads "terminal")
-    , ("M1-C-s",         namedScratchpadAction scratchpads "spotify")
+    , ("M1-C-<Return>",       namedScratchpadAction scratchpads "terminal")
+    , ("M1-C-s",               namedScratchpadAction scratchpads "spotify")
 
-      ]
+    ]
 ------------------------------------------------------------------
 ------                        MAIN                           ------               
 -------------------------------------------------------------------
@@ -440,10 +441,10 @@ defaults = def {
         focusedBorderColor = myFocusedBorderColor,
 
       -- key bindings
-     --   keys               = myKeys,
-     --   mouseBindings      = myMouseBindings,
-
+      --   keys               = myKeys,
+      --   mouseBindings      = myMouseBindings,
       -- hooks, layouts
+      
         layoutHook         = showWName' myshowWNameTheme $ myLayout,
         manageHook         = myManageHook <+> manageDocks,
         handleEventHook    = s_HandleEventHook <+> docksEventHook,
