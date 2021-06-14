@@ -329,8 +329,8 @@ s_Keys =
          [ ("C-S-<Return>",                     spawn s_Term  )
          , ("M-S-<Return>",                     spawn s_Term2 )
          , ("M1-C-v",                            spawn "code" ) 
-         , ("M1-C-b",                     spawn "qutebrowser" )
-         , ("M1-C-q",                           spawn "brave" )
+         , ("M1-C-q",                     spawn "qutebrowser" )
+         , ("M1-C-b",                           spawn "brave" )
          , ("M-C-b",                spawn "brave --incognito" )
          , ("M1-C-f",                         spawn "firefox" )
          , ("M-C-f",         spawn "firefox --private-window" )
@@ -410,11 +410,11 @@ s_Keys =
 main :: IO ()
 main = do
 	xmproc0 <- spawnPipe "xmobar -x 0 /home/steven/.config/xmobar/xmobarrc" 
-	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
+--	xmproc1 <- spawnPipe "xmobar -x 1 /home/steven/.config/xmobar/xmobarrc2" 
  	xmonad $  ewmh defaults {
         logHook = dynamicLogWithPP $ def
         {
-          ppOutput  = \x ->  hPutStrLn xmproc0 x  >> hPutStrLn xmproc1 x
+          ppOutput  = \x ->  hPutStrLn xmproc0 x -- >> hPutStrLn xmproc1 x
         --, ppCurrent = xmobarColor "#cbe500" "#078202"  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
         -- without background
         , ppCurrent = xmobarColor "#7bf9f2" ""  . wrap " "  " " -- "#71fe00" -- . wrap "[" "]"
